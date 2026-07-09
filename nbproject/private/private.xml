@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/User.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Buyer.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Seller.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Purchasable.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Product.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/AuctionProduct.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/exception/InsufficientStockException.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/auctionhub/AuctionHub.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/exception/InvalidBidException.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/exception/AuctionExpiredException.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Bid.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/CartItem.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/model/Order.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/util/PasswordUtil.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/util/FileManager.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/service/Marketplace.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/util/ThemeManager.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/util/GradientPanel.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/util/RoundedButton.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/LoginScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/RegisterScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/MainScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/ProductListScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/AuctionScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/CartScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/OrderScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/AddProductScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/com/shopauc/view/AddAuctionScreen.java</file>
+            <file>file:/C:/Users/Nisa%20Turan/OneDrive/Belgeler/NetBeansProjects/AuctionHub/src/auctionhub/Main.java</file>
+        </group>
+    </open-files>
+</project-private>
