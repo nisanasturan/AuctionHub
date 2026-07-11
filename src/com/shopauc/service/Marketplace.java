@@ -56,29 +56,25 @@ public class Marketplace {
     }
 
     public void logout() { currentUser = null; }
-
     public User getCurrentUser() { return currentUser; }
-
     public List<Product> getProducts() { return products; }
 
     public List<Product> getProductsBySeller(int sellerId) {
-        return products.stream()
-                .filter(p -> p.getSellerId() == sellerId)
-                .toList();
+        return products.stream().filter(p -> p.getSellerId() == sellerId).toList();
     }
 
-    public void addProduct(String name, double price, int stock) {
+    public void addProduct(String name, double price, int stock, String category) {
         int newId = products.isEmpty() ? 1 :
                 Collections.max(products.stream().map(Product::getId).toList()) + 1;
-        products.add(new Product(newId, name, price, stock, currentUser.getId()));
+        products.add(new Product(newId, name, price, stock, currentUser.getId(), category));
         FileManager.saveProducts(products);
     }
 
-    public void addAuctionProduct(String name, double startingPrice, int hoursUntilEnd) {
+    public void addAuctionProduct(String name, double startingPrice, int hoursUntilEnd, String category) {
         int newId = products.isEmpty() ? 1 :
                 Collections.max(products.stream().map(Product::getId).toList()) + 1;
         LocalDateTime endTime = LocalDateTime.now().plusHours(hoursUntilEnd);
-        products.add(new AuctionProduct(newId, name, startingPrice, currentUser.getId(), endTime));
+        products.add(new AuctionProduct(newId, name, startingPrice, currentUser.getId(), endTime, category));
         FileManager.saveProducts(products);
     }
 
@@ -134,8 +130,6 @@ public class Marketplace {
     }
 
     public List<Order> getOrdersByBuyer(int buyerId) {
-        return orders.stream()
-                .filter(o -> o.getBuyerId() == buyerId)
-                .toList();
+        return orders.stream().filter(o -> o.getBuyerId() == buyerId).toList();
     }
 }

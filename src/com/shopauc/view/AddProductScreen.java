@@ -4,7 +4,7 @@ import com.shopauc.service.Marketplace;
 import com.shopauc.util.*;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 
 public class AddProductScreen extends JFrame {
 
@@ -15,62 +15,60 @@ public class AddProductScreen extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        GradientPanel mainPanel = new GradientPanel(ThemeManager.PURPLE, ThemeManager.PINK);
-        mainPanel.setLayout(new BorderLayout());
-        setContentPane(mainPanel);
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(ThemeManager.PAGE_BG);
+        setContentPane(root);
 
-        JPanel header = new JPanel();
-        header.setOpaque(false);
-        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
-        header.setBorder(new EmptyBorder(36, 32, 24, 32));
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setBackground(ThemeManager.SURFACE);
+        topBar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.BORDER),
+                new EmptyBorder(12, 16, 12, 16)));
 
-        JLabel logo = new JLabel("AuctionHub");
-        logo.setFont(ThemeManager.FONT_TITLE);
-        logo.setForeground(Color.WHITE);
-        logo.setAlignmentX(LEFT_ALIGNMENT);
+        JLabel title = new JLabel("Add Product");
+        title.setFont(ThemeManager.FONT_HEADING);
+        title.setForeground(ThemeManager.TEXT_PRIMARY);
 
-        JLabel sub = new JLabel("List a new product");
-        sub.setFont(ThemeManager.FONT_SMALL);
-        sub.setForeground(new Color(255, 255, 255, 180));
-        sub.setAlignmentX(LEFT_ALIGNMENT);
+        RoundedButton backBtn = new RoundedButton("Back", true);
+        backBtn.setForeground(ThemeManager.TEXT_PRIMARY);
+        backBtn.addActionListener(e -> { dispose(); new MainScreen().setVisible(true); });
 
-        header.add(logo);
-        header.add(Box.createVerticalStrut(4));
-        header.add(sub);
+        topBar.add(title, BorderLayout.WEST);
+        topBar.add(backBtn, BorderLayout.EAST);
+
+        JPanel form = new JPanel();
+        form.setBackground(ThemeManager.PAGE_BG);
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.setBorder(new EmptyBorder(20, 24, 20, 24));
 
         JPanel card = new JPanel();
-        card.setBackground(ThemeManager.WHITE);
+        card.setBackground(ThemeManager.SURFACE);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(new EmptyBorder(28, 32, 32, 32));
-
-        JLabel title = new JLabel("New Product ➕");
-        title.setFont(ThemeManager.FONT_HEADING);
-        title.setForeground(ThemeManager.TEXT_DARK);
-        title.setAlignmentX(LEFT_ALIGNMENT);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
+                new EmptyBorder(20, 20, 20, 20)));
+        card.setAlignmentX(LEFT_ALIGNMENT);
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         JTextField nameField  = makeField();
         JTextField priceField = makeField();
         JTextField stockField = makeField();
+        JComboBox<String> catBox = new JComboBox<>(ThemeManager.CATEGORIES);
+        catBox.setFont(ThemeManager.FONT_BODY);
+        catBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        catBox.setAlignmentX(LEFT_ALIGNMENT);
 
         JLabel errorLabel = new JLabel(" ");
         errorLabel.setFont(ThemeManager.FONT_SMALL);
-        errorLabel.setForeground(new Color(220, 53, 69));
+        errorLabel.setForeground(ThemeManager.DANGER);
         errorLabel.setAlignmentX(LEFT_ALIGNMENT);
 
-        RoundedButton addBtn = new RoundedButton("Add Product",
-                ThemeManager.PURPLE, ThemeManager.PINK);
+        RoundedButton addBtn = new RoundedButton("List product",
+                ThemeManager.ACCENT, Color.WHITE);
         addBtn.setAlignmentX(LEFT_ALIGNMENT);
-        addBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        addBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
 
-        RoundedButton backBtn = new RoundedButton("← Back",
-                new Color(200,200,210), new Color(180,180,190));
-        backBtn.setForeground(ThemeManager.TEXT_DARK);
-        backBtn.setAlignmentX(LEFT_ALIGNMENT);
-        backBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
-
-        card.add(title);
-        card.add(Box.createVerticalStrut(20));
-        card.add(makeLabel("Product Name"));
+        card.add(makeLabel("Product name"));
         card.add(Box.createVerticalStrut(4));
         card.add(nameField);
         card.add(Box.createVerticalStrut(12));
@@ -78,35 +76,38 @@ public class AddProductScreen extends JFrame {
         card.add(Box.createVerticalStrut(4));
         card.add(priceField);
         card.add(Box.createVerticalStrut(12));
-        card.add(makeLabel("Stock Quantity"));
+        card.add(makeLabel("Stock quantity"));
         card.add(Box.createVerticalStrut(4));
         card.add(stockField);
+        card.add(Box.createVerticalStrut(12));
+        card.add(makeLabel("Category"));
+        card.add(Box.createVerticalStrut(4));
+        card.add(catBox);
         card.add(Box.createVerticalStrut(6));
         card.add(errorLabel);
         card.add(Box.createVerticalStrut(8));
         card.add(addBtn);
-        card.add(Box.createVerticalStrut(10));
-        card.add(backBtn);
 
         addBtn.addActionListener(e -> {
-            String name = nameField.getText().trim();
+            String name     = nameField.getText().trim();
             String priceStr = priceField.getText().trim();
             String stockStr = stockField.getText().trim();
+            String category = (String) catBox.getSelectedItem();
             if (name.isEmpty() || priceStr.isEmpty() || stockStr.isEmpty()) {
                 errorLabel.setText("Please fill in all fields.");
                 return;
             }
             try {
                 double price = Double.parseDouble(priceStr);
-                int stock = Integer.parseInt(stockStr);
+                int stock    = Integer.parseInt(stockStr);
                 if (price <= 0 || stock < 0) {
                     errorLabel.setText("Price must be > 0 and stock >= 0.");
                     return;
                 }
-                Marketplace.getInstance().addProduct(name, price, stock);
+                Marketplace.getInstance().addProduct(name, price, stock, category);
                 JOptionPane.showMessageDialog(this,
-                        name + " listed successfully!", "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        name + " listed successfully!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
                 new MainScreen().setVisible(true);
             } catch (NumberFormatException ex) {
@@ -114,16 +115,15 @@ public class AddProductScreen extends JFrame {
             }
         });
 
-        backBtn.addActionListener(e -> { dispose(); new MainScreen().setVisible(true); });
-
-        mainPanel.add(header, BorderLayout.NORTH);
-        mainPanel.add(card, BorderLayout.CENTER);
+        form.add(card);
+        root.add(topBar, BorderLayout.NORTH);
+        root.add(form, BorderLayout.CENTER);
     }
 
     private JLabel makeLabel(String text) {
         JLabel l = new JLabel(text);
         l.setFont(ThemeManager.FONT_LABEL);
-        l.setForeground(ThemeManager.TEXT_GRAY);
+        l.setForeground(ThemeManager.TEXT_SECONDARY);
         l.setAlignmentX(LEFT_ALIGNMENT);
         return l;
     }
@@ -131,12 +131,12 @@ public class AddProductScreen extends JFrame {
     private JTextField makeField() {
         JTextField f = new JTextField();
         f.setFont(ThemeManager.FONT_BODY);
-        f.setForeground(ThemeManager.TEXT_DARK);
-        f.setBackground(ThemeManager.BG_LIGHT);
+        f.setForeground(ThemeManager.TEXT_PRIMARY);
+        f.setBackground(ThemeManager.SURFACE_1);
         f.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 230), 1, true),
-                new EmptyBorder(10, 14, 10, 14)));
-        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+                BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
+                new EmptyBorder(8, 12, 8, 12)));
+        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         f.setAlignmentX(LEFT_ALIGNMENT);
         return f;
     }

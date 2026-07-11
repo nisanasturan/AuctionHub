@@ -7,13 +7,13 @@ import com.shopauc.util.*;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 
 public class CartScreen extends JFrame {
 
     public CartScreen() {
         setTitle("AuctionHub — Cart");
-        setSize(520, 620);
+        setSize(560, 620);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -22,30 +22,31 @@ public class CartScreen extends JFrame {
 
     private void buildUI() {
         JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(ThemeManager.BG_LIGHT);
+        root.setBackground(ThemeManager.PAGE_BG);
         setContentPane(root);
 
-        // ── Header ──────────────────────────────────────────
-        GradientPanel header = new GradientPanel(ThemeManager.ORANGE, ThemeManager.PINK);
-        header.setLayout(new BorderLayout());
-        header.setBorder(new EmptyBorder(20, 20, 20, 20));
-        header.setPreferredSize(new Dimension(520, 80));
+        // Top bar
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setBackground(ThemeManager.SURFACE);
+        topBar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.BORDER),
+                new EmptyBorder(12, 16, 12, 16)));
 
-        JLabel titleLabel = new JLabel("🛒  My Cart");
-        titleLabel.setFont(ThemeManager.FONT_HEADING);
-        titleLabel.setForeground(Color.WHITE);
+        JLabel title = new JLabel("My Cart");
+        title.setFont(ThemeManager.FONT_HEADING);
+        title.setForeground(ThemeManager.TEXT_PRIMARY);
 
-        RoundedButton backBtn = new RoundedButton("← Back",
-                new Color(255,255,255,60), new Color(255,255,255,30));
+        RoundedButton backBtn = new RoundedButton("Back", true);
+        backBtn.setForeground(ThemeManager.TEXT_PRIMARY);
         backBtn.addActionListener(e -> { dispose(); new MainScreen().setVisible(true); });
 
-        header.add(titleLabel, BorderLayout.WEST);
-        header.add(backBtn, BorderLayout.EAST);
+        topBar.add(title, BorderLayout.WEST);
+        topBar.add(backBtn, BorderLayout.EAST);
 
-        // ── List ────────────────────────────────────────────
+        // List
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setBackground(ThemeManager.BG_LIGHT);
+        listPanel.setBackground(ThemeManager.PAGE_BG);
         listPanel.setBorder(new EmptyBorder(12, 16, 12, 16));
 
         Marketplace mp = Marketplace.getInstance();
@@ -54,14 +55,14 @@ public class CartScreen extends JFrame {
         if (items.isEmpty()) {
             JLabel empty = new JLabel("Your cart is empty.");
             empty.setFont(ThemeManager.FONT_BODY);
-            empty.setForeground(ThemeManager.TEXT_GRAY);
+            empty.setForeground(ThemeManager.TEXT_MUTED);
             empty.setAlignmentX(CENTER_ALIGNMENT);
             listPanel.add(Box.createVerticalStrut(40));
             listPanel.add(empty);
         } else {
             for (CartItem ci : items) {
                 listPanel.add(makeCartCard(ci));
-                listPanel.add(Box.createVerticalStrut(10));
+                listPanel.add(Box.createVerticalStrut(8));
             }
         }
 
@@ -69,57 +70,67 @@ public class CartScreen extends JFrame {
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
 
-        // ── Footer ──────────────────────────────────────────
+        // Footer
         JPanel footer = new JPanel(new BorderLayout());
-        footer.setBackground(ThemeManager.WHITE);
-        footer.setBorder(new EmptyBorder(14, 20, 14, 20));
+        footer.setBackground(ThemeManager.SURFACE);
+        footer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeManager.BORDER),
+                new EmptyBorder(14, 20, 14, 20)));
 
-        JLabel total = new JLabel("Total: $" + String.format("%.2f", mp.getCartTotal()));
-        total.setFont(ThemeManager.FONT_HEADING);
-        total.setForeground(ThemeManager.TEXT_DARK);
+        JPanel totalPanel = new JPanel();
+        totalPanel.setOpaque(false);
+        totalPanel.setLayout(new BoxLayout(totalPanel, BoxLayout.Y_AXIS));
+
+        JLabel totalLabel = new JLabel("Total");
+        totalLabel.setFont(ThemeManager.FONT_SMALL);
+        totalLabel.setForeground(ThemeManager.TEXT_MUTED);
+
+        JLabel totalAmount = new JLabel("$" + String.format("%.2f", mp.getCartTotal()));
+        totalAmount.setFont(ThemeManager.FONT_TITLE);
+        totalAmount.setForeground(ThemeManager.TEXT_PRIMARY);
+
+        totalPanel.add(totalLabel);
+        totalPanel.add(totalAmount);
 
         RoundedButton checkoutBtn = new RoundedButton("Checkout",
-                ThemeManager.PURPLE, ThemeManager.PINK);
+                ThemeManager.ACCENT, Color.WHITE);
         checkoutBtn.addActionListener(e -> {
             try {
                 Order order = mp.checkout();
                 if (order != null) {
                     JOptionPane.showMessageDialog(this,
-                            "Order #" + order.getId() + " placed!\nTotal: $"
+                            "Order #" + order.getId() + " confirmed!\nTotal: $"
                             + String.format("%.2f", order.getTotalAmount()),
-                            "Order Confirmed", JOptionPane.INFORMATION_MESSAGE);
+                            "Order placed", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
                     new MainScreen().setVisible(true);
                 }
             } catch (InsufficientStockException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(),
-                        "Stock Error", JOptionPane.ERROR_MESSAGE);
+                        "Stock error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        footer.add(total, BorderLayout.WEST);
+        footer.add(totalPanel, BorderLayout.WEST);
         footer.add(checkoutBtn, BorderLayout.EAST);
 
-        root.add(header, BorderLayout.NORTH);
+        root.add(topBar, BorderLayout.NORTH);
         root.add(scroll, BorderLayout.CENTER);
         root.add(footer, BorderLayout.SOUTH);
     }
 
     private JPanel makeCartCard(CartItem ci) {
         JPanel card = new JPanel(new BorderLayout(12, 0));
-        card.setBackground(ThemeManager.WHITE);
+        card.setBackground(ThemeManager.SURFACE);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(230, 230, 240), 1, true),
-                new EmptyBorder(14, 16, 14, 16)));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
+                BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
+                new EmptyBorder(12, 14, 12, 14)));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 78));
 
-        JLabel icon = new JLabel("🛍");
-        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 26));
-        JPanel iconWrap = new JPanel(new BorderLayout());
-        iconWrap.setBackground(ThemeManager.AMBER_SOFT);
-        iconWrap.setPreferredSize(new Dimension(52, 52));
-        iconWrap.add(icon, BorderLayout.CENTER);
-        icon.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel dot = new JPanel();
+        dot.setBackground(ThemeManager.getCategoryColor(ci.getProduct().getCategory()));
+        dot.setPreferredSize(new Dimension(44, 44));
+        dot.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
 
         JPanel info = new JPanel();
         info.setOpaque(false);
@@ -127,33 +138,41 @@ public class CartScreen extends JFrame {
 
         JLabel name = new JLabel(ci.getProduct().getName());
         name.setFont(ThemeManager.FONT_SUB);
-        name.setForeground(ThemeManager.TEXT_DARK);
+        name.setForeground(ThemeManager.TEXT_PRIMARY);
 
         JLabel qty = new JLabel("Qty: " + ci.getQuantity());
         qty.setFont(ThemeManager.FONT_SMALL);
-        qty.setForeground(ThemeManager.TEXT_GRAY);
-
-        JLabel price = new JLabel("$" + String.format("%.2f", ci.getTotalPrice()));
-        price.setFont(ThemeManager.FONT_BODY);
-        price.setForeground(ThemeManager.ORANGE);
+        qty.setForeground(ThemeManager.TEXT_MUTED);
 
         info.add(name);
         info.add(Box.createVerticalStrut(3));
         info.add(qty);
-        info.add(Box.createVerticalStrut(2));
-        info.add(price);
+
+        JPanel right = new JPanel();
+        right.setOpaque(false);
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+
+        JLabel price = new JLabel("$" + String.format("%.2f", ci.getTotalPrice()));
+        price.setFont(ThemeManager.FONT_SUB);
+        price.setForeground(ThemeManager.TEXT_PRIMARY);
+        price.setAlignmentX(RIGHT_ALIGNMENT);
 
         RoundedButton removeBtn = new RoundedButton("Remove",
-                new Color(220, 53, 69), new Color(200, 35, 51));
+                ThemeManager.DANGER, Color.WHITE);
+        removeBtn.setFont(ThemeManager.FONT_SMALL);
         removeBtn.addActionListener(e -> {
             Marketplace.getInstance().removeFromCart(ci.getProduct().getId());
             dispose();
             new CartScreen().setVisible(true);
         });
 
-        card.add(iconWrap, BorderLayout.WEST);
+        right.add(price);
+        right.add(Box.createVerticalStrut(4));
+        right.add(removeBtn);
+
+        card.add(dot, BorderLayout.WEST);
         card.add(info, BorderLayout.CENTER);
-        card.add(removeBtn, BorderLayout.EAST);
+        card.add(right, BorderLayout.EAST);
 
         return card;
     }

@@ -6,19 +6,31 @@ import javax.swing.*;
 
 public class RoundedButton extends JButton {
 
-    private Color colorStart;
-    private Color colorEnd;
-    private int radius;
+    private Color bg;
+    private Color fg;
+    private boolean outline;
 
-    public RoundedButton(String text, Color colorStart, Color colorEnd) {
+    public RoundedButton(String text, Color bg, Color fg) {
         super(text);
-        this.colorStart = colorStart;
-        this.colorEnd = colorEnd;
-        this.radius = 12;
+        this.bg = bg;
+        this.fg = fg;
+        this.outline = false;
+        init();
+    }
+
+    public RoundedButton(String text, boolean outline) {
+        super(text);
+        this.bg = ThemeManager.SURFACE;
+        this.fg = ThemeManager.TEXT_PRIMARY;
+        this.outline = outline;
+        init();
+    }
+
+    private void init() {
         setContentAreaFilled(false);
         setFocusPainted(false);
         setBorderPainted(false);
-        setForeground(Color.WHITE);
+        setForeground(fg);
         setFont(ThemeManager.FONT_SUB);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
@@ -27,9 +39,16 @@ public class RoundedButton extends JButton {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gp = new GradientPaint(0, 0, colorStart, getWidth(), getHeight(), colorEnd);
-        g2.setPaint(gp);
-        g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), radius * 2, radius * 2));
+        if (outline) {
+            g2.setColor(ThemeManager.BORDER_STRONG);
+            g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 8, 8));
+            g2.setColor(ThemeManager.SURFACE);
+            g2.fill(new RoundRectangle2D.Double(1, 1, getWidth()-2, getHeight()-2, 7, 7));
+        } else {
+            g2.setColor(getModel().isPressed() ? bg.darker() :
+                       getModel().isRollover() ? bg.brighter() : bg);
+            g2.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 8, 8));
+        }
         g2.dispose();
         super.paintComponent(g);
     }
@@ -37,6 +56,6 @@ public class RoundedButton extends JButton {
     @Override
     public Dimension getPreferredSize() {
         Dimension d = super.getPreferredSize();
-        return new Dimension(d.width + 24, d.height + 10);
+        return new Dimension(d.width + 20, d.height + 8);
     }
 }

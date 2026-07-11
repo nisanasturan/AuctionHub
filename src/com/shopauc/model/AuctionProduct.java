@@ -11,10 +11,10 @@ public class AuctionProduct extends Product {
     private String highestBidderName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private List<double[]> bidHistory; // [amount, bidderId]
+    private List<double[]> bidHistory;
 
-    public AuctionProduct(int id, String name, double startingPrice, int sellerId, LocalDateTime endTime) {
-        super(id, name, startingPrice, 1, sellerId);
+    public AuctionProduct(int id, String name, double startingPrice, int sellerId, LocalDateTime endTime, String category) {
+        super(id, name, startingPrice, 1, sellerId, category);
         this.startingPrice = startingPrice;
         this.currentBid = startingPrice;
         this.highestBidderId = -1;
@@ -39,7 +39,6 @@ public class AuctionProduct extends Product {
         this.bidHistory.add(new double[]{amount, bidderId});
     }
 
-    // FileManager uyumluluğu için eski metod
     public void placeBid(double amount, int bidderId) {
         this.currentBid = amount;
         this.highestBidderId = bidderId;
@@ -55,7 +54,6 @@ public class AuctionProduct extends Product {
 
     @Override
     public String toString() {
-        return "[AUCTION] ID:" + getId() + " | " + getName()
-                + " | Bid:$" + currentBid + " | Ends:" + endTime;
+        return "[AUCTION] " + getName() + " | $" + currentBid + " | Ends:" + endTime;
     }
 }

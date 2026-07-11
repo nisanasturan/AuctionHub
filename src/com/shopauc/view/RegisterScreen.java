@@ -4,84 +4,75 @@ import com.shopauc.service.Marketplace;
 import com.shopauc.util.*;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 
 public class RegisterScreen extends JFrame {
 
     public RegisterScreen() {
         setTitle("AuctionHub — Register");
-        setSize(420, 650);
+        setSize(400, 580);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        GradientPanel mainPanel = new GradientPanel(ThemeManager.PINK, ThemeManager.ORANGE);
-        mainPanel.setLayout(new BorderLayout());
-        setContentPane(mainPanel);
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(ThemeManager.PAGE_BG);
+        setContentPane(root);
 
-        // ── Header ──────────────────────────────────────────
-        JPanel header = new JPanel();
-        header.setOpaque(false);
-        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
-        header.setBorder(new EmptyBorder(48, 36, 28, 36));
+        JPanel center = new JPanel();
+        center.setOpaque(false);
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        center.setBorder(new EmptyBorder(32, 40, 32, 40));
 
         JLabel logo = new JLabel("AuctionHub");
         logo.setFont(ThemeManager.FONT_TITLE);
-        logo.setForeground(Color.WHITE);
-        logo.setAlignmentX(LEFT_ALIGNMENT);
+        logo.setForeground(ThemeManager.ACCENT);
+        logo.setAlignmentX(CENTER_ALIGNMENT);
 
-        JLabel sub = new JLabel("Create your account");
-        sub.setFont(ThemeManager.FONT_SMALL);
-        sub.setForeground(new Color(255, 255, 255, 180));
-        sub.setAlignmentX(LEFT_ALIGNMENT);
-
-        header.add(logo);
-        header.add(Box.createVerticalStrut(4));
-        header.add(sub);
-
-        // ── Form Card ───────────────────────────────────────
         JPanel card = new JPanel();
-        card.setBackground(ThemeManager.WHITE);
+        card.setBackground(ThemeManager.SURFACE);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(new EmptyBorder(28, 32, 32, 32));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
+                new EmptyBorder(24, 24, 24, 24)));
+        card.setAlignmentX(CENTER_ALIGNMENT);
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        JLabel title = new JLabel("Join us today 🚀");
-        title.setFont(ThemeManager.FONT_HEADING);
-        title.setForeground(ThemeManager.TEXT_DARK);
-        title.setAlignmentX(LEFT_ALIGNMENT);
+        JLabel formTitle = new JLabel("Create account");
+        formTitle.setFont(ThemeManager.FONT_HEADING);
+        formTitle.setForeground(ThemeManager.TEXT_PRIMARY);
+        formTitle.setAlignmentX(LEFT_ALIGNMENT);
 
-        JTextField nameField  = makeField("Full name");
-        JTextField emailField = makeField("Email address");
+        JTextField nameField  = makeField();
+        JTextField emailField = makeField();
         JPasswordField passField = new JPasswordField();
         styleField(passField);
 
-        // Role seçimi
-        JLabel roleLabel = makeLabel("I want to");
-        JPanel rolePanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        // Role toggle
+        JPanel rolePanel = new JPanel(new GridLayout(1, 2, 8, 0));
         rolePanel.setOpaque(false);
-        rolePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        rolePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         rolePanel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JToggleButton buyerBtn  = makeRoleButton("🛍  Buyer");
-        JToggleButton sellerBtn = makeRoleButton("🏪  Seller");
-        ButtonGroup group = new ButtonGroup();
-        group.add(buyerBtn);
-        group.add(sellerBtn);
+        JToggleButton buyerBtn  = makeRoleBtn("Buyer");
+        JToggleButton sellerBtn = makeRoleBtn("Seller");
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(buyerBtn); bg.add(sellerBtn);
         buyerBtn.setSelected(true);
-        buyerBtn.setBackground(ThemeManager.PURPLE_SOFT);
-        buyerBtn.setForeground(ThemeManager.PURPLE);
+        buyerBtn.setBackground(ThemeManager.ACCENT_LIGHT);
+        buyerBtn.setForeground(ThemeManager.ACCENT);
 
         buyerBtn.addActionListener(e -> {
-            buyerBtn.setBackground(ThemeManager.PURPLE_SOFT);
-            buyerBtn.setForeground(ThemeManager.PURPLE);
-            sellerBtn.setBackground(ThemeManager.BG_LIGHT);
-            sellerBtn.setForeground(ThemeManager.TEXT_GRAY);
+            buyerBtn.setBackground(ThemeManager.ACCENT_LIGHT);
+            buyerBtn.setForeground(ThemeManager.ACCENT);
+            sellerBtn.setBackground(ThemeManager.SURFACE_1);
+            sellerBtn.setForeground(ThemeManager.TEXT_SECONDARY);
         });
         sellerBtn.addActionListener(e -> {
-            sellerBtn.setBackground(ThemeManager.PINK_SOFT);
-            sellerBtn.setForeground(ThemeManager.PINK);
-            buyerBtn.setBackground(ThemeManager.BG_LIGHT);
-            buyerBtn.setForeground(ThemeManager.TEXT_GRAY);
+            sellerBtn.setBackground(ThemeManager.ACCENT_LIGHT);
+            sellerBtn.setForeground(ThemeManager.ACCENT);
+            buyerBtn.setBackground(ThemeManager.SURFACE_1);
+            buyerBtn.setForeground(ThemeManager.TEXT_SECONDARY);
         });
 
         rolePanel.add(buyerBtn);
@@ -89,22 +80,22 @@ public class RegisterScreen extends JFrame {
 
         JLabel errorLabel = new JLabel(" ");
         errorLabel.setFont(ThemeManager.FONT_SMALL);
-        errorLabel.setForeground(new Color(220, 53, 69));
+        errorLabel.setForeground(ThemeManager.DANGER);
         errorLabel.setAlignmentX(LEFT_ALIGNMENT);
 
-        RoundedButton registerBtn = new RoundedButton("Create Account",
-                ThemeManager.PINK, ThemeManager.ORANGE);
+        RoundedButton registerBtn = new RoundedButton("Create account",
+                ThemeManager.ACCENT, Color.WHITE);
         registerBtn.setAlignmentX(LEFT_ALIGNMENT);
-        registerBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        registerBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
 
-        RoundedButton backBtn = new RoundedButton("Back to Login",
-                ThemeManager.PURPLE, ThemeManager.PINK);
+        RoundedButton backBtn = new RoundedButton("Back to sign in", true);
+        backBtn.setForeground(ThemeManager.TEXT_PRIMARY);
         backBtn.setAlignmentX(LEFT_ALIGNMENT);
-        backBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        backBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
 
-        card.add(title);
+        card.add(formTitle);
         card.add(Box.createVerticalStrut(20));
-        card.add(makeLabel("Full Name"));
+        card.add(makeLabel("Full name"));
         card.add(Box.createVerticalStrut(4));
         card.add(nameField);
         card.add(Box.createVerticalStrut(12));
@@ -116,17 +107,16 @@ public class RegisterScreen extends JFrame {
         card.add(Box.createVerticalStrut(4));
         card.add(passField);
         card.add(Box.createVerticalStrut(12));
-        card.add(roleLabel);
+        card.add(makeLabel("Account type"));
         card.add(Box.createVerticalStrut(6));
         card.add(rolePanel);
-        card.add(Box.createVerticalStrut(6));
+        card.add(Box.createVerticalStrut(4));
         card.add(errorLabel);
         card.add(Box.createVerticalStrut(8));
         card.add(registerBtn);
         card.add(Box.createVerticalStrut(10));
         card.add(backBtn);
 
-        // ── Actions ─────────────────────────────────────────
         registerBtn.addActionListener(e -> {
             String name  = nameField.getText().trim();
             String email = emailField.getText().trim();
@@ -140,36 +130,35 @@ public class RegisterScreen extends JFrame {
                 return;
             }
             String role = sellerBtn.isSelected() ? "SELLER" : "BUYER";
-            boolean success = Marketplace.getInstance().register(name, email, pass, role);
-            if (!success) {
+            if (!Marketplace.getInstance().register(name, email, pass, role)) {
                 errorLabel.setText("This email is already registered.");
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Account created! Please login.", "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        "Account created! Please sign in.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
                 new LoginScreen().setVisible(true);
             }
         });
 
-        backBtn.addActionListener(e -> {
-            dispose();
-            new LoginScreen().setVisible(true);
-        });
+        backBtn.addActionListener(e -> { dispose(); new LoginScreen().setVisible(true); });
 
-        mainPanel.add(header, BorderLayout.NORTH);
-        mainPanel.add(card, BorderLayout.CENTER);
+        center.add(logo);
+        center.add(Box.createVerticalStrut(20));
+        center.add(card);
+
+        root.add(center, BorderLayout.CENTER);
     }
 
     private JLabel makeLabel(String text) {
         JLabel l = new JLabel(text);
         l.setFont(ThemeManager.FONT_LABEL);
-        l.setForeground(ThemeManager.TEXT_GRAY);
+        l.setForeground(ThemeManager.TEXT_SECONDARY);
         l.setAlignmentX(LEFT_ALIGNMENT);
         return l;
     }
 
-    private JTextField makeField(String placeholder) {
+    private JTextField makeField() {
         JTextField f = new JTextField();
         styleField(f);
         return f;
@@ -177,23 +166,23 @@ public class RegisterScreen extends JFrame {
 
     private void styleField(JTextField f) {
         f.setFont(ThemeManager.FONT_BODY);
-        f.setForeground(ThemeManager.TEXT_DARK);
-        f.setBackground(ThemeManager.BG_LIGHT);
+        f.setForeground(ThemeManager.TEXT_PRIMARY);
+        f.setBackground(ThemeManager.SURFACE_1);
         f.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 230), 1, true),
-                new EmptyBorder(10, 14, 10, 14)));
-        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+                BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
+                new EmptyBorder(8, 12, 8, 12)));
+        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         f.setAlignmentX(LEFT_ALIGNMENT);
     }
 
-    private JToggleButton makeRoleButton(String text) {
-        JToggleButton btn = new JToggleButton(text);
-        btn.setFont(ThemeManager.FONT_SUB);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setBackground(ThemeManager.BG_LIGHT);
-        btn.setForeground(ThemeManager.TEXT_GRAY);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return btn;
+    private JToggleButton makeRoleBtn(String text) {
+        JToggleButton b = new JToggleButton(text);
+        b.setFont(ThemeManager.FONT_SUB);
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
+        b.setBackground(ThemeManager.SURFACE_1);
+        b.setForeground(ThemeManager.TEXT_SECONDARY);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return b;
     }
 }
