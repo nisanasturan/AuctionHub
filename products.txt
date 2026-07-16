@@ -1,4 +1,5 @@
-PRODUCT,1,DIOR lip oil,72.0,2,3,Cosmetics
+PRODUCT,1,DIOR lip oil,72.0,1,3,Cosmetics
 AUCTION,2,Antique mirror,300.0,350.0,3,2026-07-11T21:52:17.116974300,Home & Living
-AUCTION,3,2016 model Porsche Carrera,80000.0,80000.0,3,2026-07-13T22:09:20.601087800,General
-PRODUCT,4,romance book,5.0,100,3,Home & Living
+AUCTION,3,2016 model Porsche Carrera,80000.0,85000.0,3,2026-07-13T22:09:20.601087800,General
+PRODUCT,4,romance book,5.0,99,3,Home & Living
+PRODUCT,5,bora's love,9.999999999999E12,1,6,Home & Living
