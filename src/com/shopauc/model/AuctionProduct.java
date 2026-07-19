@@ -13,8 +13,9 @@ public class AuctionProduct extends Product {
     private LocalDateTime endTime;
     private List<double[]> bidHistory;
 
-    public AuctionProduct(int id, String name, double startingPrice, int sellerId, LocalDateTime endTime, String category) {
-        super(id, name, startingPrice, 1, sellerId, category);
+    public AuctionProduct(int id, String name, String brand, double startingPrice,
+                          int sellerId, LocalDateTime endTime, String category) {
+        super(id, name, brand, startingPrice, 1, sellerId, category);
         this.startingPrice = startingPrice;
         this.currentBid = startingPrice;
         this.highestBidderId = -1;
@@ -54,6 +55,6 @@ public class AuctionProduct extends Product {
 
     @Override
     public String toString() {
-        return "[AUCTION] " + getName() + " | $" + currentBid + " | Ends:" + endTime;
+        return "[AUCTION] " + getBrand() + " " + getName() + " | $" + currentBid;
     }
 }

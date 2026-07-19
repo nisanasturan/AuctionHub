@@ -10,7 +10,7 @@ public class AddProductScreen extends JFrame {
 
     public AddProductScreen() {
         setTitle("AuctionHub — Add Product");
-        setSize(420, 520);
+        setSize(420, 560);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -51,10 +51,14 @@ public class AddProductScreen extends JFrame {
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         JTextField nameField  = makeField();
+        JTextField brandField = makeField();
         JTextField priceField = makeField();
         JTextField stockField = makeField();
+
         JComboBox<String> catBox = new JComboBox<>(ThemeManager.CATEGORIES);
         catBox.setFont(ThemeManager.FONT_BODY);
+        catBox.setBackground(ThemeManager.SURFACE_1);
+        catBox.setForeground(ThemeManager.TEXT_PRIMARY);
         catBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         catBox.setAlignmentX(LEFT_ALIGNMENT);
 
@@ -63,14 +67,17 @@ public class AddProductScreen extends JFrame {
         errorLabel.setForeground(ThemeManager.DANGER);
         errorLabel.setAlignmentX(LEFT_ALIGNMENT);
 
-        RoundedButton addBtn = new RoundedButton("List product",
-                ThemeManager.ACCENT, Color.WHITE);
+        RoundedButton addBtn = new RoundedButton("List product", ThemeManager.ACCENT, Color.WHITE);
         addBtn.setAlignmentX(LEFT_ALIGNMENT);
         addBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
 
         card.add(makeLabel("Product name"));
         card.add(Box.createVerticalStrut(4));
         card.add(nameField);
+        card.add(Box.createVerticalStrut(12));
+        card.add(makeLabel("Brand"));
+        card.add(Box.createVerticalStrut(4));
+        card.add(brandField);
         card.add(Box.createVerticalStrut(12));
         card.add(makeLabel("Price ($)"));
         card.add(Box.createVerticalStrut(4));
@@ -90,10 +97,11 @@ public class AddProductScreen extends JFrame {
 
         addBtn.addActionListener(e -> {
             String name     = nameField.getText().trim();
+            String brand    = brandField.getText().trim();
             String priceStr = priceField.getText().trim();
             String stockStr = stockField.getText().trim();
             String category = (String) catBox.getSelectedItem();
-            if (name.isEmpty() || priceStr.isEmpty() || stockStr.isEmpty()) {
+            if (name.isEmpty() || brand.isEmpty() || priceStr.isEmpty() || stockStr.isEmpty()) {
                 errorLabel.setText("Please fill in all fields.");
                 return;
             }
@@ -104,10 +112,8 @@ public class AddProductScreen extends JFrame {
                     errorLabel.setText("Price must be > 0 and stock >= 0.");
                     return;
                 }
-                Marketplace.getInstance().addProduct(name, price, stock, category);
-                JOptionPane.showMessageDialog(this,
-                        name + " listed successfully!",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                Marketplace.getInstance().addProduct(name, brand, price, stock, category);
+                JOptionPane.showMessageDialog(this, name + " listed!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
                 new MainScreen().setVisible(true);
             } catch (NumberFormatException ex) {
@@ -133,6 +139,7 @@ public class AddProductScreen extends JFrame {
         f.setFont(ThemeManager.FONT_BODY);
         f.setForeground(ThemeManager.TEXT_PRIMARY);
         f.setBackground(ThemeManager.SURFACE_1);
+        f.setCaretColor(ThemeManager.TEXT_PRIMARY);
         f.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
                 new EmptyBorder(8, 12, 8, 12)));

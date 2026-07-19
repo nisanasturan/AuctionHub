@@ -61,33 +61,52 @@ public class AuctionScreen extends JFrame {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(ThemeManager.PAGE_BG);
 
-        // Filter row
-        JPanel filterRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 10));
-        filterRow.setBackground(ThemeManager.SURFACE);
-        filterRow.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.BORDER));
+        JPanel filterBar = new JPanel();
+        filterBar.setLayout(new BoxLayout(filterBar, BoxLayout.Y_AXIS));
+        filterBar.setBackground(ThemeManager.SURFACE);
+        filterBar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.BORDER),
+                new EmptyBorder(8, 16, 8, 16)));
 
-        String[] cats = {"All Categories", "Technology", "Home & Living", "Cosmetics", "Fashion", "Sports", "General"};
-        categoryBox = new JComboBox<>(cats);
-        categoryBox.setFont(ThemeManager.FONT_BODY);
-
-        String[] sorts = {"Ending Soon", "Newly Added", "Price: Low to High", "Price: High to Low"};
-        sortBox = new JComboBox<>(sorts);
-        sortBox.setFont(ThemeManager.FONT_BODY);
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        row1.setOpaque(false);
 
         String[] statuses = {"Active", "Ended", "All"};
         statusBox = new JComboBox<>(statuses);
         statusBox.setFont(ThemeManager.FONT_BODY);
+        statusBox.setBackground(ThemeManager.SURFACE_1);
+        statusBox.setForeground(ThemeManager.TEXT_PRIMARY);
+
+        String[] cats = {"All Categories", "Clothing", "Electronics",
+                         "Home & Living", "Personal Care", "Sports & Outdoor"};
+        categoryBox = new JComboBox<>(cats);
+        categoryBox.setFont(ThemeManager.FONT_BODY);
+        categoryBox.setBackground(ThemeManager.SURFACE_1);
+        categoryBox.setForeground(ThemeManager.TEXT_PRIMARY);
+
+        row1.add(makeLabel("Status:"));
+        row1.add(statusBox);
+        row1.add(makeLabel("Category:"));
+        row1.add(categoryBox);
+
+        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        row2.setOpaque(false);
+
+        String[] sorts = {"Ending Soon", "Newly Added", "Price: Low to High", "Price: High to Low"};
+        sortBox = new JComboBox<>(sorts);
+        sortBox.setFont(ThemeManager.FONT_BODY);
+        sortBox.setBackground(ThemeManager.SURFACE_1);
+        sortBox.setForeground(ThemeManager.TEXT_PRIMARY);
 
         RoundedButton filterBtn = new RoundedButton("Filter", ThemeManager.ACCENT, Color.WHITE);
         filterBtn.addActionListener(e -> refreshList());
 
-        filterRow.add(new JLabel("Status:"));
-        filterRow.add(statusBox);
-        filterRow.add(new JLabel("Category:"));
-        filterRow.add(categoryBox);
-        filterRow.add(new JLabel("Sort:"));
-        filterRow.add(sortBox);
-        filterRow.add(filterBtn);
+        row2.add(makeLabel("Sort:"));
+        row2.add(sortBox);
+        row2.add(filterBtn);
+
+        filterBar.add(row1);
+        filterBar.add(row2);
 
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -97,8 +116,9 @@ public class AuctionScreen extends JFrame {
         JScrollPane scroll = new JScrollPane(listPanel);
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.getViewport().setBackground(ThemeManager.PAGE_BG);
 
-        wrapper.add(filterRow, BorderLayout.NORTH);
+        wrapper.add(filterBar, BorderLayout.NORTH);
         wrapper.add(scroll, BorderLayout.CENTER);
 
         refreshList();
@@ -112,24 +132,22 @@ public class AuctionScreen extends JFrame {
         String sort     = (String) sortBox.getSelectedItem();
         String status   = (String) statusBox.getSelectedItem();
 
-        List<AuctionProduct> auctions = Marketplace.getInstance().getProducts().stream()
-                .filter(p -> p instanceof AuctionProduct)
-                .map(p -> (AuctionProduct) p)
-                .filter(ap -> category.equals("All Categories") || category.equals(ap.getCategory()))
+        List<AuctionProduct> auctions = Marketplace.getInstance().getAuctions().stream()
+                .filter(ap -> "All Categories".equals(category) || category.equals(ap.getCategory()))
                 .filter(ap -> {
-                    if (status.equals("Active")) return !ap.isExpired();
-                    if (status.equals("Ended"))  return ap.isExpired();
+                    if ("Active".equals(status)) return !ap.isExpired();
+                    if ("Ended".equals(status))  return ap.isExpired();
                     return true;
                 })
                 .collect(Collectors.toList());
 
-        if (sort.equals("Ending Soon"))
+        if ("Ending Soon".equals(sort))
             auctions.sort(Comparator.comparing(AuctionProduct::getEndTime));
-        else if (sort.equals("Newly Added"))
+        else if ("Newly Added".equals(sort))
             auctions.sort(Comparator.comparing(AuctionProduct::getStartTime).reversed());
-        else if (sort.equals("Price: Low to High"))
+        else if ("Price: Low to High".equals(sort))
             auctions.sort(Comparator.comparingDouble(AuctionProduct::getCurrentBid));
-        else if (sort.equals("Price: High to Low"))
+        else if ("Price: High to Low".equals(sort))
             auctions.sort(Comparator.comparingDouble(AuctionProduct::getCurrentBid).reversed());
 
         if (auctions.isEmpty()) {
@@ -152,7 +170,7 @@ public class AuctionScreen extends JFrame {
 
     private JPanel makeAuctionCard(AuctionProduct ap) {
         boolean expired  = ap.isExpired();
-        int uid = Marketplace.getInstance().getCurrentUser().getId();
+        int uid          = Marketplace.getInstance().getCurrentUser().getId();
         boolean isWinner = ap.isWinner(uid);
 
         JPanel card = new JPanel();
@@ -162,22 +180,29 @@ public class AuctionScreen extends JFrame {
                 BorderFactory.createLineBorder(
                         expired ? ThemeManager.BORDER : ThemeManager.ACCENT, 1, true),
                 new EmptyBorder(14, 16, 14, 16)));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 280));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
 
         // Title row
         JPanel titleRow = new JPanel(new BorderLayout());
         titleRow.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(ap.getName());
-        nameLabel.setFont(ThemeManager.FONT_HEADING);
-        nameLabel.setForeground(ThemeManager.TEXT_PRIMARY);
+        JPanel namePanel = new JPanel();
+        namePanel.setOpaque(false);
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
 
-        JLabel statusBadge = new JLabel(expired ? "ENDED" : "LIVE");
-        statusBadge.setFont(new Font("Segoe UI", Font.BOLD, 10));
-        statusBadge.setForeground(Color.WHITE);
-        statusBadge.setOpaque(true);
-        statusBadge.setBackground(expired ? ThemeManager.TEXT_MUTED : ThemeManager.DANGER);
-        statusBadge.setBorder(new EmptyBorder(3, 8, 3, 8));
+        JLabel brandLabel = new JLabel(ap.getBrand());
+        brandLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        brandLabel.setForeground(ThemeManager.TEXT_PRIMARY);
+
+        JLabel nameLabel = new JLabel(ap.getName());
+        nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        nameLabel.setForeground(ThemeManager.TEXT_SECONDARY);
+
+        namePanel.add(brandLabel);
+        namePanel.add(nameLabel);
+
+        JPanel badges = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
+        badges.setOpaque(false);
 
         JLabel catBadge = new JLabel(ap.getCategory());
         catBadge.setFont(new Font("Segoe UI", Font.BOLD, 10));
@@ -186,12 +211,17 @@ public class AuctionScreen extends JFrame {
         catBadge.setBackground(ThemeManager.getCategoryColor(ap.getCategory()));
         catBadge.setBorder(new EmptyBorder(3, 8, 3, 8));
 
-        JPanel badges = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
-        badges.setOpaque(false);
+        JLabel statusBadge = new JLabel(expired ? "ENDED" : "LIVE");
+        statusBadge.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        statusBadge.setForeground(Color.WHITE);
+        statusBadge.setOpaque(true);
+        statusBadge.setBackground(expired ? ThemeManager.TEXT_MUTED : ThemeManager.DANGER);
+        statusBadge.setBorder(new EmptyBorder(3, 8, 3, 8));
+
         badges.add(catBadge);
         badges.add(statusBadge);
 
-        titleRow.add(nameLabel, BorderLayout.WEST);
+        titleRow.add(namePanel, BorderLayout.WEST);
         titleRow.add(badges, BorderLayout.EAST);
 
         // Info grid
@@ -199,23 +229,34 @@ public class AuctionScreen extends JFrame {
         grid.setOpaque(false);
         grid.setBorder(new EmptyBorder(12, 0, 10, 0));
 
-        grid.add(makeInfoBox("Starting price", "$" + String.format("%.2f", ap.getStartingPrice()), ThemeManager.ACCENT_LIGHT, ThemeManager.ACCENT));
-        grid.add(makeInfoBox("Current bid", "$" + String.format("%.2f", ap.getCurrentBid()), new Color(220, 252, 231), ThemeManager.SUCCESS));
-        grid.add(makeInfoBox("Highest bidder", ap.getHighestBidderName(), new Color(254, 243, 199), ThemeManager.WARNING));
-        grid.add(makeInfoBox("Total bids", ap.getBidCount() + " bids", ThemeManager.SURFACE_1, ThemeManager.TEXT_SECONDARY));
-        grid.add(makeInfoBox("Started", ap.getStartTime().format(FMT), ThemeManager.SURFACE_1, ThemeManager.TEXT_SECONDARY));
-        grid.add(makeInfoBox("Ends", ap.getEndTime().format(FMT),
-                expired ? new Color(254, 226, 226) : new Color(220, 252, 231),
+        grid.add(makeInfoBox("Starting price",
+                "$" + String.format("%.2f", ap.getStartingPrice()),
+                ThemeManager.ACCENT_LIGHT, ThemeManager.ACCENT));
+        grid.add(makeInfoBox("Current bid",
+                "$" + String.format("%.2f", ap.getCurrentBid()),
+                ThemeManager.SUCCESS_LIGHT, ThemeManager.SUCCESS));
+        grid.add(makeInfoBox("Highest bidder",
+                ap.getHighestBidderName(),
+                ThemeManager.WARNING_LIGHT, ThemeManager.WARNING));
+        grid.add(makeInfoBox("Total bids",
+                ap.getBidCount() + " bids",
+                ThemeManager.SURFACE_1, ThemeManager.TEXT_SECONDARY));
+        grid.add(makeInfoBox("Started",
+                ap.getStartTime().format(FMT),
+                ThemeManager.SURFACE_1, ThemeManager.TEXT_SECONDARY));
+        grid.add(makeInfoBox("Ends",
+                ap.getEndTime().format(FMT),
+                expired ? ThemeManager.DANGER_LIGHT : ThemeManager.SUCCESS_LIGHT,
                 expired ? ThemeManager.DANGER : ThemeManager.SUCCESS));
 
-        // Time row
+        // Time label
         JPanel timeRow = new JPanel(new BorderLayout());
         timeRow.setOpaque(false);
         timeRow.setBorder(new EmptyBorder(0, 0, 8, 0));
 
         String timeText;
         if (expired) {
-            timeText = isWinner ? "Auction ended — You won this auction!" : "Auction ended";
+            timeText = isWinner ? "Auction ended — You won!" : "Auction ended";
         } else {
             long mins  = ChronoUnit.MINUTES.between(LocalDateTime.now(), ap.getEndTime());
             long hours = mins / 60;
@@ -275,6 +316,13 @@ public class AuctionScreen extends JFrame {
         box.add(Box.createVerticalStrut(2));
         box.add(val);
         return box;
+    }
+
+    private JLabel makeLabel(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(ThemeManager.FONT_LABEL);
+        l.setForeground(ThemeManager.TEXT_SECONDARY);
+        return l;
     }
 
     private void showBidDialog(AuctionProduct ap) {

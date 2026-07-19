@@ -3,14 +3,16 @@ package com.shopauc.model;
 public class Product implements Purchasable {
     private int id;
     private String name;
+    private String brand;
     private double price;
     private int stock;
     private int sellerId;
     private String category;
 
-    public Product(int id, String name, double price, int stock, int sellerId, String category) {
+    public Product(int id, String name, String brand, double price, int stock, int sellerId, String category) {
         this.id = id;
         this.name = name;
+        this.brand = brand;
         this.price = price;
         this.stock = stock;
         this.sellerId = sellerId;
@@ -19,6 +21,7 @@ public class Product implements Purchasable {
 
     public int getId() { return id; }
     public String getName() { return name; }
+    public String getBrand() { return brand; }
     public double getPrice() { return price; }
     public int getStock() { return stock; }
     public int getSellerId() { return sellerId; }
@@ -30,6 +33,6 @@ public class Product implements Purchasable {
 
     @Override
     public String toString() {
-        return "[PRODUCT] " + name + " | $" + price + " | Stock:" + stock + " | " + category;
+        return "[PRODUCT] " + brand + " " + name + " | $" + price + " | Stock:" + stock;
     }
 }

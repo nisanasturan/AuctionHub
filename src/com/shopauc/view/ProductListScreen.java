@@ -31,9 +31,7 @@ public class ProductListScreen extends JFrame {
         isSeller = mp.getCurrentUser() instanceof Seller;
         allProducts = isSeller
                 ? mp.getProductsBySeller(mp.getCurrentUser().getId())
-                : mp.getProducts().stream()
-                    .filter(p -> !(p instanceof AuctionProduct))
-                    .collect(Collectors.toList());
+                : mp.getProducts();
 
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(ThemeManager.PAGE_BG);
@@ -67,7 +65,6 @@ public class ProductListScreen extends JFrame {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(ThemeManager.PAGE_BG);
 
-        // ── Filter bar (2 satır) ─────────────────────────────
         JPanel filterBar = new JPanel();
         filterBar.setLayout(new BoxLayout(filterBar, BoxLayout.Y_AXIS));
         filterBar.setBackground(ThemeManager.SURFACE);
@@ -75,57 +72,51 @@ public class ProductListScreen extends JFrame {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.BORDER),
                 new EmptyBorder(8, 16, 8, 16)));
 
-        // Satır 1: Search + Category
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         row1.setOpaque(false);
 
         searchField = new JTextField(16);
         searchField.setFont(ThemeManager.FONT_BODY);
+        searchField.setForeground(ThemeManager.TEXT_PRIMARY);
+        searchField.setBackground(ThemeManager.SURFACE_1);
+        searchField.setCaretColor(ThemeManager.TEXT_PRIMARY);
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
                 new EmptyBorder(5, 10, 5, 10)));
 
-        String[] cats = {"All Categories", "Technology", "Home & Living",
-                         "Cosmetics", "Fashion", "Sports", "General"};
+       String[] cats = {"All Categories", "Clothing", "Electronics", "Home & Living", "Personal Care", "Sports & Outdoor"};
         categoryBox = new JComboBox<>(cats);
         categoryBox.setFont(ThemeManager.FONT_BODY);
+        categoryBox.setBackground(ThemeManager.SURFACE_1);
+        categoryBox.setForeground(ThemeManager.TEXT_PRIMARY);
 
-        JLabel searchLbl = new JLabel("Search:");
-        searchLbl.setFont(ThemeManager.FONT_LABEL);
-        searchLbl.setForeground(ThemeManager.TEXT_SECONDARY);
-
-        JLabel catLbl = new JLabel("Category:");
-        catLbl.setFont(ThemeManager.FONT_LABEL);
-        catLbl.setForeground(ThemeManager.TEXT_SECONDARY);
+        JLabel searchLbl = makeLabel("Search:");
+        JLabel catLbl    = makeLabel("Category:");
 
         row1.add(searchLbl);
         row1.add(searchField);
         row1.add(catLbl);
         row1.add(categoryBox);
 
-        // Satır 2: Sort + Search butonu
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         row2.setOpaque(false);
 
         String[] sorts = {"Default", "Price: Low to High", "Price: High to Low", "Name A-Z"};
         sortBox = new JComboBox<>(sorts);
         sortBox.setFont(ThemeManager.FONT_BODY);
-
-        JLabel sortLbl = new JLabel("Sort:");
-        sortLbl.setFont(ThemeManager.FONT_LABEL);
-        sortLbl.setForeground(ThemeManager.TEXT_SECONDARY);
+        sortBox.setBackground(ThemeManager.SURFACE_1);
+        sortBox.setForeground(ThemeManager.TEXT_PRIMARY);
 
         RoundedButton searchBtn = new RoundedButton("Search", ThemeManager.ACCENT, Color.WHITE);
         searchBtn.addActionListener(e -> refreshList());
 
-        row2.add(sortLbl);
+        row2.add(makeLabel("Sort:"));
         row2.add(sortBox);
         row2.add(searchBtn);
 
         filterBar.add(row1);
         filterBar.add(row2);
 
-        // ── List panel ───────────────────────────────────────
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(ThemeManager.PAGE_BG);
@@ -134,6 +125,7 @@ public class ProductListScreen extends JFrame {
         JScrollPane scroll = new JScrollPane(listPanel);
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.getViewport().setBackground(ThemeManager.PAGE_BG);
 
         wrapper.add(filterBar, BorderLayout.NORTH);
         wrapper.add(scroll, BorderLayout.CENTER);
@@ -150,7 +142,9 @@ public class ProductListScreen extends JFrame {
         String sort     = (String) sortBox.getSelectedItem();
 
         List<Product> filtered = allProducts.stream()
-                .filter(p -> query.isEmpty() || p.getName().toLowerCase().contains(query))
+                .filter(p -> query.isEmpty() ||
+                        p.getName().toLowerCase().contains(query) ||
+                        p.getBrand().toLowerCase().contains(query))
                 .filter(p -> "All Categories".equals(category) || category.equals(p.getCategory()))
                 .collect(Collectors.toList());
 
@@ -185,21 +179,35 @@ public class ProductListScreen extends JFrame {
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
                 new EmptyBorder(12, 14, 12, 14)));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
-        JPanel dot = new JPanel();
-        dot.setBackground(ThemeManager.getCategoryColor(p.getCategory()));
-        dot.setPreferredSize(new Dimension(48, 48));
-        dot.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
+        // İkon kutusu
+        JPanel iconBox = new JPanel(new BorderLayout());
+        iconBox.setBackground(ThemeManager.getCategoryColor(p.getCategory()));
+        iconBox.setPreferredSize(new Dimension(52, 52));
+        iconBox.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
 
+        JLabel iconLabel = new JLabel(ThemeManager.getCategoryIcon(p.getCategory()),
+                SwingConstants.CENTER);
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        iconBox.add(iconLabel, BorderLayout.CENTER);
+
+        // Bilgi
         JPanel info = new JPanel();
         info.setOpaque(false);
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-        JLabel name = new JLabel(p.getName());
-        name.setFont(ThemeManager.FONT_SUB);
-        name.setForeground(ThemeManager.TEXT_PRIMARY);
+        // Marka — koyu, kalın
+        JLabel brandLabel = new JLabel(p.getBrand());
+        brandLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        brandLabel.setForeground(ThemeManager.TEXT_PRIMARY);
 
+        // Ürün adı — soluk, ince
+        JLabel nameLabel = new JLabel(p.getName());
+        nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        nameLabel.setForeground(ThemeManager.TEXT_SECONDARY);
+
+        // Meta row
         JPanel metaRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         metaRow.setOpaque(false);
 
@@ -217,10 +225,13 @@ public class ProductListScreen extends JFrame {
         metaRow.add(catBadge);
         metaRow.add(stock);
 
-        info.add(name);
+        info.add(brandLabel);
+        info.add(Box.createVerticalStrut(2));
+        info.add(nameLabel);
         info.add(Box.createVerticalStrut(4));
         info.add(metaRow);
 
+        // Sağ
         JPanel right = new JPanel();
         right.setOpaque(false);
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
@@ -233,29 +244,34 @@ public class ProductListScreen extends JFrame {
         right.add(price);
 
         if (!isSeller) {
-            RoundedButton addBtn = new RoundedButton("Add to cart",
-                    ThemeManager.ACCENT, Color.WHITE);
+            RoundedButton addBtn = new RoundedButton("Add to cart", ThemeManager.ACCENT, Color.WHITE);
             addBtn.setFont(ThemeManager.FONT_SMALL);
             addBtn.addActionListener(e -> {
                 try {
                     Marketplace.getInstance().addToCart(p, 1);
                     JOptionPane.showMessageDialog(this,
-                            p.getName() + " added to cart!",
+                            p.getBrand() + " " + p.getName() + " added to cart!",
                             "Added", JOptionPane.INFORMATION_MESSAGE);
                 } catch (InsufficientStockException ex) {
-                    JOptionPane.showMessageDialog(this,
-                            ex.getMessage(), "Out of stock",
-                            JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(),
+                            "Out of stock", JOptionPane.WARNING_MESSAGE);
                 }
             });
             right.add(Box.createVerticalStrut(6));
             right.add(addBtn);
         }
 
-        card.add(dot, BorderLayout.WEST);
+        card.add(iconBox, BorderLayout.WEST);
         card.add(info, BorderLayout.CENTER);
         card.add(right, BorderLayout.EAST);
 
         return card;
+    }
+
+    private JLabel makeLabel(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(ThemeManager.FONT_LABEL);
+        l.setForeground(ThemeManager.TEXT_SECONDARY);
+        return l;
     }
 }

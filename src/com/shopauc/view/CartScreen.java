@@ -25,7 +25,6 @@ public class CartScreen extends JFrame {
         root.setBackground(ThemeManager.PAGE_BG);
         setContentPane(root);
 
-        // Top bar
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(ThemeManager.SURFACE);
         topBar.setBorder(BorderFactory.createCompoundBorder(
@@ -43,7 +42,6 @@ public class CartScreen extends JFrame {
         topBar.add(title, BorderLayout.WEST);
         topBar.add(backBtn, BorderLayout.EAST);
 
-        // List
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(ThemeManager.PAGE_BG);
@@ -69,8 +67,8 @@ public class CartScreen extends JFrame {
         JScrollPane scroll = new JScrollPane(listPanel);
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.getViewport().setBackground(ThemeManager.PAGE_BG);
 
-        // Footer
         JPanel footer = new JPanel(new BorderLayout());
         footer.setBackground(ThemeManager.SURFACE);
         footer.setBorder(BorderFactory.createCompoundBorder(
@@ -92,8 +90,7 @@ public class CartScreen extends JFrame {
         totalPanel.add(totalLabel);
         totalPanel.add(totalAmount);
 
-        RoundedButton checkoutBtn = new RoundedButton("Checkout",
-                ThemeManager.ACCENT, Color.WHITE);
+        RoundedButton checkoutBtn = new RoundedButton("Checkout", ThemeManager.ACCENT, Color.WHITE);
         checkoutBtn.addActionListener(e -> {
             try {
                 Order order = mp.checkout();
@@ -120,34 +117,52 @@ public class CartScreen extends JFrame {
     }
 
     private JPanel makeCartCard(CartItem ci) {
+        Product p = ci.getProduct();
+
         JPanel card = new JPanel(new BorderLayout(12, 0));
         card.setBackground(ThemeManager.SURFACE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true),
                 new EmptyBorder(12, 14, 12, 14)));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 78));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
-        JPanel dot = new JPanel();
-        dot.setBackground(ThemeManager.getCategoryColor(ci.getProduct().getCategory()));
-        dot.setPreferredSize(new Dimension(44, 44));
-        dot.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
+        // İkon
+        JPanel iconBox = new JPanel(new BorderLayout());
+        iconBox.setBackground(ThemeManager.getCategoryColor(p.getCategory()));
+        iconBox.setPreferredSize(new Dimension(52, 52));
+        iconBox.setBorder(BorderFactory.createLineBorder(ThemeManager.BORDER, 1, true));
 
+        JLabel iconLabel = new JLabel(ThemeManager.getCategoryIcon(p.getCategory()),
+                SwingConstants.CENTER);
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        iconBox.add(iconLabel, BorderLayout.CENTER);
+
+        // Bilgi
         JPanel info = new JPanel();
         info.setOpaque(false);
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
 
-        JLabel name = new JLabel(ci.getProduct().getName());
-        name.setFont(ThemeManager.FONT_SUB);
-        name.setForeground(ThemeManager.TEXT_PRIMARY);
+        // Marka koyu
+        JLabel brandLabel = new JLabel(p.getBrand());
+        brandLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        brandLabel.setForeground(ThemeManager.TEXT_PRIMARY);
+
+        // Ürün adı soluk
+        JLabel nameLabel = new JLabel(p.getName());
+        nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        nameLabel.setForeground(ThemeManager.TEXT_SECONDARY);
 
         JLabel qty = new JLabel("Qty: " + ci.getQuantity());
         qty.setFont(ThemeManager.FONT_SMALL);
         qty.setForeground(ThemeManager.TEXT_MUTED);
 
-        info.add(name);
+        info.add(brandLabel);
+        info.add(Box.createVerticalStrut(2));
+        info.add(nameLabel);
         info.add(Box.createVerticalStrut(3));
         info.add(qty);
 
+        // Sağ
         JPanel right = new JPanel();
         right.setOpaque(false);
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
@@ -157,20 +172,19 @@ public class CartScreen extends JFrame {
         price.setForeground(ThemeManager.TEXT_PRIMARY);
         price.setAlignmentX(RIGHT_ALIGNMENT);
 
-        RoundedButton removeBtn = new RoundedButton("Remove",
-                ThemeManager.DANGER, Color.WHITE);
+        RoundedButton removeBtn = new RoundedButton("Remove", ThemeManager.DANGER, Color.WHITE);
         removeBtn.setFont(ThemeManager.FONT_SMALL);
         removeBtn.addActionListener(e -> {
-            Marketplace.getInstance().removeFromCart(ci.getProduct().getId());
+            Marketplace.getInstance().removeFromCart(p.getId());
             dispose();
             new CartScreen().setVisible(true);
         });
 
         right.add(price);
-        right.add(Box.createVerticalStrut(4));
+        right.add(Box.createVerticalStrut(6));
         right.add(removeBtn);
 
-        card.add(dot, BorderLayout.WEST);
+        card.add(iconBox, BorderLayout.WEST);
         card.add(info, BorderLayout.CENTER);
         card.add(right, BorderLayout.EAST);
 
